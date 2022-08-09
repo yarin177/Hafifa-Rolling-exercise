@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, Boolean, Float
+from sqlalchemy.orm import relationship
 from .const import Base
 
 class Metadata(Base):
@@ -9,3 +10,4 @@ class Metadata(Base):
     camera_fov = Column(Float)
     azimuth = Column(Float)
     elevation = Column(Float)
+    frames = relationship('Frames', backref='metadata')
