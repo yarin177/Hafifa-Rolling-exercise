@@ -20,7 +20,7 @@ def upload_frames(frames: list):
 
     for count, frame in enumerate(frames):
         # convert image to bytes
-        is_success, im_buf_arr = cv2.imencode(".png",frame)
+        is_success, im_buf_arr = cv2.imencode(".png", frame)
         byte_im = im_buf_arr.tobytes()
         # upload frame to the container
         blob = BlobClient.from_connection_string(conn_str=connection_string, container_name="yarin-hafifa", blob_name=f"{blob_folder_name}/{count}.png")
