@@ -1,8 +1,8 @@
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
-from .const import Base
+from .const import BASE
 
-class Videos(Base):
+class Videos(BASE):
     __tablename__ = 'videos'
 
     os_video_path = Column(String, primary_key=True)

@@ -1,7 +1,7 @@
 from sqlalchemy import Column, ForeignKey, Integer, String
-from .const import Base
+from .const import BASE
 
-class Frames(Base):
+class Frames(BASE):
     __tablename__ = 'frames'
 
     os_frame_path = Column(String, primary_key=True)
