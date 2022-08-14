@@ -17,7 +17,7 @@ def basic():
     return 'Alive'
 
 @app.route('/uploadvideo', methods = ['POST'])
-def user():
+def upload_video():
     content = request.json
     if 'video_path' not in content:
         return "Error: 'video_path' key was not provided", 400
@@ -27,6 +27,7 @@ def user():
         return f"Error: file '{video_path}' is not found", 400
 
     metadatas = []
+    frame_paths = []
     frames = get_frames(video_path)
     print('Generating Metadata..')
     head, tail = os.path.split(video_path)
@@ -34,14 +35,20 @@ def user():
 
     for count, frame in enumerate(frames):
         frame_path = f"frames/{frames_folder_name}/{count}.png"
+        frame_paths.append((frame_path))
         metadatas.append((generate_metadata(frame), is_frame_tagged(frame)))
 
     view_name = frames_folder_name.split('_')[0]
     os_video_path = f'videos/{video_path}'
     frame_count = len(frames)
-    db.add_metadata(metadatas)
+
+    #Upload to DB
+    db.add_video(os_video_path, view_name, frame_count)
+    metas = db.add_metadatas(metadatas)
+    db.add_frames(metas,frame_paths,os_video_path)
+
     return 'Success'
-    #db.add_video(os_video_path, view_name, frame_count)
+    return 'Success'
 
     #print('Uploading Frames..')
     #upload_frames(frames, file_name)

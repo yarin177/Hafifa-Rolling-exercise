@@ -18,8 +18,25 @@ class DBHandler:
         self.session.add(video)
         self.session.commit()
 
-    def add_metadata(self,metadatas):
+    def add_metadatas(self,metadatas):
+        metas_to_frames = {}
         for metadata in metadatas:
+            #add counter here 
             fov, azimuth, elevation = metadata[0]
             is_tagged = metadata[1]
-            #ID?
+            meta = Metadata(tagged=is_tagged, camera_fov=fov, azimuth=azimuth, elevation=elevation)
+            if meta in metas_to_frames:
+                metas_to_frames['']
+            self.session.add(meta)
+            metas.append(meta)
+
+        self.session.commit()
+        return metas
+    
+    def add_frames(self,metadatas,frame_paths,os_video_path):
+        for index, (frame_path,metadata) in enumerate(zip(frame_paths,metadatas)):
+            fr = Frames(os_frame_path=frame_path, os_video_path=os_video_path, frame_index=index,metadata_id=metadata.metadata_id)
+            self.session.add(fr)
+
+        self.session.commit()
+
