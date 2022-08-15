@@ -18,6 +18,7 @@ def basic():
 
 @app.route('/uploadvideo', methods = ['POST'])
 def upload_video():
+    # Edge cases handling
     content = request.json
     if 'video_path' not in content:
         return "Error: 'video_path' key was not provided", 400
@@ -27,31 +28,27 @@ def upload_video():
         return f"Error: file '{video_path}' is not found", 400
 
     metadatas = []
-    frame_paths = []
     frames = get_frames(video_path)
     print('Generating Metadata..')
     head, tail = os.path.split(video_path)
-    frames_folder_name = tail.split('.')[0]
+    video_folder_name = tail.split('.')[0]
 
-    for count, frame in enumerate(frames):
-        frame_path = f"frames/{frames_folder_name}/{count}.png"
-        frame_paths.append((frame_path))
+    for frame in frames:
         metadatas.append((generate_metadata(frame), is_frame_tagged(frame)))
 
-    view_name = frames_folder_name.split('_')[0]
-    os_video_path = f'videos/{video_path}'
+    view_name = tail.split('_')[0]
+    os_video_path = f'videos/{video_folder_name}.mp4'
     frame_count = len(frames)
+    folder_frame_path = f"frames/{video_folder_name}"
 
     #Upload to DB
     db.add_video(os_video_path, view_name, frame_count)
-    metas = db.add_metadatas(metadatas)
-    db.add_frames(metas,frame_paths,os_video_path)
+    metas_to_frames = db.add_metadatas(metadatas)
+    db.add_frames(metas_to_frames,folder_frame_path,os_video_path)
 
     return 'Success'
-    return 'Success'
-
     #print('Uploading Frames..')
-    #upload_frames(frames, file_name)
+    #upload_frames(frames, video_folder)
     #print('Uploading Video..')
     #upload_video(video_path)
 
@@ -66,8 +63,8 @@ def get_frames(video_path):
 
     return frames
 
-def upload_frames(frames: list, parent_folder: str):
-    blob_folder_name = f'frames/{parent_folder}'
+def upload_frames(frames: list, video_folder: str):
+    blob_folder_name = f'frames/{video_folder}'
 
     for count, frame in enumerate(frames):
         # convert image to bytes
