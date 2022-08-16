@@ -8,8 +8,7 @@ from tables.const import BASE
 
 class DBHandler:
     def __init__(self):
-        #engine = create_engine("sqlite:///../tempdb.db")
-        engine = create_engine("postgresql://postgres:postgrespw@localhost:55000")
+        engine = create_engine("postgresql://postgres:postgrespw@host.docker.internal:55000")
         Session = sessionmaker(bind=engine)
         self.session = Session()
 

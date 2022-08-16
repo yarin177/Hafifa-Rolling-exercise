@@ -1,5 +1,3 @@
-from genericpath import isfile
-import imp
 from azure.storage.blob import BlobClient
 from given_functions import is_frame_tagged, generate_metadata
 import cv2
@@ -7,17 +5,27 @@ from flask import Flask
 from flask import request
 import os
 from DBHandler import DBHandler
+from flasgger import swag_from
 
 connection_string = "DefaultEndpointsProtocol=https;AccountName=hafifaos;AccountKey=GYFMpijXyEmd3IIRPw0DnjH3EhNeUFkSHxtK1i7kiaNdX4vWvf9ijhtE9xGpTZmvPERUygc4N1Elccdf143qWg==;EndpointSuffix=core.windows.net"
 app = Flask(__name__)
 db = DBHandler()
 
-@app.route('/')
-def basic():
-    return 'Alive'
-
 @app.route('/uploadvideo', methods = ['POST'])
+@swag_from('requests.yml')
 def upload_video():
+    """
+    This function takes a video path, split it to frames,
+    generates metadata for each frame, updating it in Postgres DB,
+    and uploads all the media to Azure storage blob.
+
+    Args:
+        video_path(str): A local path for a vide file
+
+    Returns:
+        status(str): Sucess/Error
+    """
+
     # Edge cases handling
     content = request.json
     if 'video_path' not in content:
